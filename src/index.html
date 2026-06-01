@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+  <meta name="format-detection" content="telephone=no" />
+  <title>菲比记账 · 本地手机账本</title>
+  <link rel="stylesheet" href="./styles.css" />
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+</head>
+<body>
+  <main class="phone-shell" aria-label="菲比记账 App">
+    <section class="screen page active" id="page-detail" data-page="detail">
+      <header class="app-header">
+        <div>
+          <p class="eyebrow">Phoebe Ledger</p>
+          <h1><span class="brand-pink">菲比</span>记账</h1>
+        </div>
+        <button class="icon-btn" id="quickExport" type="button" aria-label="导出数据">⇩</button>
+      </header>
+
+      <section class="phoebe-guide" aria-label="菲比形象指引">
+        <button class="phoebe-avatar" id="phoebeAvatar" type="button" aria-label="菲比互动">
+          <img src="./phoebe.png" alt="菲比" />
+        </button>
+        <div class="phoebe-copy">
+          <p class="guide-kicker">原版菲比形象指引</p>
+          <h2>愿光芒庇护你的钱包</h2>
+          <p id="petBubble">点击菲比，她会陪你认真记账。</p>
+        </div>
+      </section>
+
+      <article class="hero-card">
+        <div class="hero-top">
+          <span>本月概览</span>
+          <strong id="currentMonthText">--月</strong>
+        </div>
+        <div class="hero-main">
+          <div>
+            <small>本月支出</small>
+            <b id="monthExpense">¥0.00</b>
+          </div>
+          <div>
+            <small>本月收入</small>
+            <b id="monthIncome">¥0.00</b>
+          </div>
+          <div>
+            <small>剩余预算</small>
+            <b id="remainingBudget">¥0.00</b>
+          </div>
+        </div>
+      </article>
+
+      <section class="section-title">
+        <h2>账单时间线</h2>
+        <span id="billCount">0 笔</span>
+      </section>
+      <div id="timeline" class="timeline"></div>
+    </section>
+
+    <section class="screen page" id="page-stats" data-page="stats">
+      <header class="app-header">
+        <div>
+          <p class="eyebrow">Data Insight</p>
+          <h1>统计</h1>
+        </div>
+      </header>
+
+      <section class="chart-card">
+        <div class="card-head">
+          <h2>近 14 天消费趋势</h2>
+          <span>支出</span>
+        </div>
+        <div id="trendChart" class="chart"></div>
+      </section>
+
+      <section class="chart-card">
+        <div class="card-head">
+          <h2>本月分类占比</h2>
+          <span>环形图</span>
+        </div>
+        <div id="donutChart" class="chart donut"></div>
+      </section>
+
+      <section class="chart-card">
+        <div class="card-head">
+          <h2>消费排行榜</h2>
+          <span id="rankTotal">¥0.00</span>
+        </div>
+        <div id="ranking" class="ranking"></div>
+      </section>
+    </section>
+
+    <section class="screen page" id="page-assets" data-page="assets">
+      <header class="app-header">
+        <div>
+          <p class="eyebrow">Wallets</p>
+          <h1>资产</h1>
+        </div>
+        <strong id="assetTotal" class="asset-total">¥0.00</strong>
+      </header>
+      <div id="assetList" class="asset-list"></div>
+    </section>
+
+    <section class="screen page" id="page-profile" data-page="profile">
+      <header class="app-header">
+        <div>
+          <p class="eyebrow">Settings</p>
+          <h1>我的</h1>
+        </div>
+      </header>
+
+      <section class="profile-card budget-card" id="budgetCard">
+        <div class="card-head">
+          <h2>智能预算墙</h2>
+          <span id="budgetState">健康</span>
+        </div>
+        <div class="budget-number"><span id="usedBudgetText">¥0.00</span><small>/</small><span id="totalBudgetText">¥0.00</span></div>
+        <div class="progress-track"><div id="budgetBar" class="progress-fill"></div></div>
+        <p id="budgetHint" class="hint">控制得很好，继续保持。</p>
+        <label class="field inline-field">
+          <span>月预算</span>
+          <input id="budgetInput" type="number" min="0" step="100" placeholder="设置预算" />
+          <button id="saveBudget" type="button" class="mini-btn">保存</button>
+        </label>
+      </section>
+
+      <section class="profile-card">
+        <h2>本地数据</h2>
+        <p class="hint">账单、资产账户与预算全部保存在当前浏览器 localStorage，不上传任何服务器。</p>
+        <div class="action-grid">
+          <button id="exportJson" type="button" class="ghost-btn">导出 JSON</button>
+          <button id="resetDemo" type="button" class="ghost-btn">恢复体验数据</button>
+          <button id="clearData" type="button" class="danger-btn">清空本地数据</button>
+        </div>
+      </section>
+    </section>
+
+    <button id="fab" class="fab" type="button" aria-label="记一笔">＋</button>
+
+    <nav class="bottom-nav" aria-label="底部导航">
+      <button class="nav-item active" data-target="detail" type="button"><span>📋</span><b>明细</b></button>
+      <button class="nav-item" data-target="stats" type="button"><span>📈</span><b>统计</b></button>
+      <button class="nav-item" data-target="assets" type="button"><span>💳</span><b>资产</b></button>
+      <button class="nav-item" data-target="profile" type="button"><span>👤</span><b>我的</b></button>
+    </nav>
+
+    <div id="sheetMask" class="sheet-mask" hidden></div>
+    <section id="entrySheet" class="entry-sheet" aria-label="记一笔弹窗" aria-hidden="true">
+      <div class="grabber"></div>
+      <div class="sheet-head">
+        <h2>记一笔</h2>
+        <button id="closeSheet" class="icon-btn" type="button" aria-label="关闭">×</button>
+      </div>
+      <div class="segmented" role="tablist">
+        <button class="seg-btn active" data-type="expense" type="button">支出</button>
+        <button class="seg-btn" data-type="income" type="button">收入</button>
+      </div>
+      <div id="categoryGrid" class="category-grid"></div>
+      <form id="entryForm" class="entry-form">
+        <label class="amount-field">
+          <span>¥</span>
+          <input id="amountInput" type="number" min="0.01" step="0.01" placeholder="0.00" required />
+        </label>
+        <div class="form-row">
+          <label class="field"><span>日期</span><input id="dateInput" type="date" required /></label>
+          <label class="field"><span>账户</span><select id="accountSelect" required></select></label>
+        </div>
+        <label class="field"><span>备注</span><input id="noteInput" type="text" maxlength="24" placeholder="例如：午餐、工资、打车" /></label>
+        <button class="save-btn" type="submit">保存记账</button>
+      </form>
+    </section>
+  </main>
+
+  <script src="./app.js"></script>
+</body>
+</html>
